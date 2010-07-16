@@ -1,6 +1,8 @@
 = dm-rets-adapter
 
-Description goes here.
+== DataMapper adapter for RETS using rets4r
+
+Data Mapper RETS Adapter opens up a whole new chapter.
 
 == Note on Patches/Pull Requests
  
