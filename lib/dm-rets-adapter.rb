@@ -22,11 +22,17 @@ module DataMapper::Adapters
       klass    = model.storage_names[name][:class]
       select_list = model.properties.map(&:field).join(',')
 
+      dmql = query.conditions.map do |condition|
+        case condition
+        when ::DataMapper::Query::Conditions::InclusionComparison
+          "(#{condition.subject.name}=#{condition.value.begin}-#{condition.value.end})"
+        end
+      end.join(',')
       records = nil 
       RETS4R::Client.new(url) do |client|
         client.logger = DataMapper.logger 
         client.login(username, password)
-        records = client.search(resource,klass,nil,'Select' => select_list, 'Limit' => query.limit.to_s).response
+        records = client.search(resource,klass,dmql,'Select' => select_list, 'Limit' => query.limit.to_s).response
       end
       records || []
     end

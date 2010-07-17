@@ -34,10 +34,10 @@ describe DataMapper::Adapters::RetsAdapter do
           @client.should_receive(:login).with('mc', 'p@$$')
         end
         it 'should search with the storage name class and resource' do
-          @client.should_receive(:search).with('PROPERTY','RES', nil, anything)
+          @client.should_receive(:search).with('PROPERTY','RES', anything, anything)
         end
         it 'should pass the select to search' do
-          @client.should_receive(:search).with('PROPERTY','RES', nil,hash_including('Select' => 'id,COLOR,num_spots,STRIPEDYN'))
+          @client.should_receive(:search).with(anything,anything,anything,hash_including('Select' => 'id,COLOR,num_spots,STRIPEDYN'))
         end
         it 'should set the logger to the datamapper logger' do
           DataMapper.stub!(:logger).and_return('fake logger')
@@ -48,6 +48,11 @@ describe DataMapper::Adapters::RetsAdapter do
         end
       end
 
+      it 'should generate range list field criteria' do
+        @client.should_receive(:search).with(anything,anything,'(num_spots=1-5)',anything)
+        Heffalump.all(:num_spots => 1..5).should be_empty
+      end
+
       it 'should not raise any errors' do
         lambda {
           Heffalump.all()
@@ -55,7 +60,7 @@ describe DataMapper::Adapters::RetsAdapter do
       end
 
       it 'should pass the limit to the client' do
-        @client.should_receive(:search).with('PROPERTY','RES', nil,hash_including('Limit' => '5'))
+        @client.should_receive(:search).with(anything,anything,anything,hash_including('Limit' => '5'))
         Heffalump.all(:limit => 5).should be_empty
       end
 
@@ -91,10 +96,6 @@ describe DataMapper::Adapters::RetsAdapter do
 
       describe 'conditions' do
         describe 'eql' do
-          before {pending}
-          it 'should be able to search for objects included in an inclusive range of values' do
-            Heffalump.all(:num_spots => 1..5).should be_include(@five)
-          end
 
           it 'should be able to search for objects included in an exclusive range of values' do
             Heffalump.all(:num_spots => 1...6).should be_include(@five)
@@ -261,14 +262,14 @@ describe DataMapper::Adapters::RetsAdapter do
     before :all do
       # http://www.crt.realtors.org/projects/rets/variman/demo/
       
-      DataMapper::Logger.new(STDERR, :debug)
+      #DataMapper::Logger.new(STDERR, :debug)
       #@adapter = DataMapper.setup(:default, 
       #                            :url => 'http://demo.crt.realtors.org:6103/rets/login', 
       #                            :username => 'Joe', :password => 'Schmoe', :adapter => 'rets')
       #
       @adapter = DataMapper.setup(:default, 
                                   :url => 'http://ntreisrets.mls.ntreis.net/rets/login',
-                                  :username => 'mc', :password => 'password', :adapter => 'rets')
+                                  :username => 'Joe', :password => 'Schmoe', :adapter => 'rets')
       class ::Property
         include DataMapper::Resource
         storage_names[:default] = { :resource => 'PROPERTY', :class => 'RES' }
