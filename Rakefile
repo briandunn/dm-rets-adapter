@@ -5,13 +5,15 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "dm-rets-adapter"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{DataMapper adapter for RETS using RETS4R}
+    gem.description = %Q{Read only adapter for RETS}
     gem.email = "brianpatrickdunn@gmail.com"
     gem.homepage = "http://github.com/briandunn/dm-rets-adapter"
     gem.authors = ["Brian Dunn"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
+    gem.add_runtime_dependency "rets4r", "~> 1.1.17"
+    gem.add_runtime_dependency "dm-core", "~> 1.0.0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
